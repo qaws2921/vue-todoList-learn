@@ -7,24 +7,46 @@
       value=""
     >
     </v-textarea>
-    <v-btn @click="listAdd">리스트추가</v-btn>
+    <v-btn v-if="mode === 'add'" @click="listAdd">리스트추가</v-btn>
+    <v-btn v-else @click="listEdit">리스트수정</v-btn>
   </div>
 </template>
 
 <script>
+  import { eventBus } from "../main"
+
   export default {
     data() {
       return {
-        memo: null
+        memo: null,
+        index: null,
+        mode:'add'
       }
+    },
+    created() {
+      eventBus.$on('listEdit', (memo, index) => {
+        this.memo = memo
+        this.index = index
+        this.mode = 'edit'
+      })
     },
     methods: {
       listAdd() {
-        console.log('추가')
         if(this.memo === null) {
           alert("할이을 입력해주세요")
         } else {
           this.$emit('listAdd',this.memo)
+          this.memo = null
+        }
+      },
+      listEdit() {
+         if(this.memo === null) {
+          alert("할일을 입력해주세요")
+        } else {
+          this.$emit('listEdit',this.memo,this.index)
+          this.memo = null
+          this.index = null
+          this.mode = 'add'
         }
       }
     }
